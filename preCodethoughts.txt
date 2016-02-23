@@ -1,0 +1,89 @@
+Create database 'blog' in psql
+
+Have the app.js create these tables with the 'synch' function.
+
+	Table 'users': 
+	Columns:
+
+	1: Primary key id
+	2: Username
+	3: email adres
+	4: Password 
+
+	Table 'posts':
+	columns:
+
+	1: Primary key id
+	2: title
+	3: body
+	4: users_id
+
+	Table 'comments'
+
+	1: Primary key id
+	2: user_id
+	3: body
+	4: post_id
+
+Jade files:
+
+	Index.jade
+		Requesting this page will connect to the GET handler 1 that will render this page.  		
+		This page displays the home screen, general info and will have a form to login and one to register. The login form will go to a GET handler 2 that will check if the login is valid and if so then renders the users page. If it is invalid it should return a query string saying that an invalid email was given and stay on home page. The register form will connect to a Post handler 1 that will write the given data to the database and then render the users page. I have to think about how that POST handler will redirect to the get handler to render the users page and pass the newly entered data so that the user is also imediately logged in. This shouldnt be a problem since the handler it redirects to will check if the user details are correct. Or the user will just have to log in after registration...
+
+	user.Jade 		
+		On this page there will be four buttons. 
+
+		One to view all the post. this button will connect to a GET handler 3 that will render the user/posts.jade page displaying all the post from everyone. The handler will get all the posts from the database.  
+
+		The other button will go to another GET handler 4, that will also render the user/posts.jade. This handler will just get all the data from the database where "user is user"... 
+
+		There is an empty div or li in which the user can write a new post. this part will connect with post handler 2 that will write the data to the database and redirect to GET handler 4.
+
+		The logout button will connect to a GET handler 5 that will distroy the session and redirect to the home page, but with the URL query string "succesfull logout". 
+
+	user/posts.jade
+		This page will show each post in the array received from GET handlers 2 or 3. Each post here is clickable. I don't know if these will be li's or divs yet. When the post is clicked, it goes to a GET handler 5 that will render user/postPlusComment.jade. The GET handler will return all the comments with the id number of the post in the post table. 
+
+	user/postPlusComments.jade
+		This page will contain the specific post clicked in a div or li, and all the related comments underneat in divs or li's. It will receive it's data from the GET handler 6. underneat the last comment there will be I guess a form tag where you can type another comment. Submitting this comment will connect to a POST handler 3 that will add the comment to the database and will render itself so that the newly added post will be visible on the page. I guess I could also use Ajax to have the data send to the same page instead of having to refresh it. 
+
+Routes:
+
+	1: GET '/'
+		Renders: index.jade
+
+	2: GET 'user/login'
+		renders: users.jade
+
+	1: POST 'user/register'
+		Renders: users.jade 
+			Or renders Index.jade with the URL query message that registration was succesful and that the users has to login. 
+
+	3: GET 'user/id/Posts'
+		Renders : users/posts.jade 
+			Only the posts where the user id applies will be selected from the database before rendering
+
+	4: GET 'user/allPost'
+		Renders: users/posts.jade
+			All the posts will be selected from the database before rendering
+
+	2: POST 'user/post'
+		writes the data to the database
+		Redirects: GET 'user/ownPosts'
+
+	5: GET 'user/logout'
+		renders: index.jade with query string passed in that the logout was succesful.
+
+	6: GET 'user/comments'
+		Renders: user/postPluscomments.jade
+
+	3: POST 'user/comments'
+		Renders: itself. 
+			Writes the data from the new page to the database and renders itself again so that the page will be refreshed and the last comment will be added to the page. 
+
+//I wonder if I should manually program what to do if someone manually types the next route in the URL before being logged in. it should display the login box.
+
+
+	3: GET 'index/users.jade' 
+		can look like the home page, but now there is a menubar with the options of: view list of own posts. view list of all posts
