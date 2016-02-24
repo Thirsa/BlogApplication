@@ -1,0 +1,22 @@
+doctype html
+html
+	head
+	body
+		form(name="login", action="user/login", method="get")
+			br
+			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+			br
+			input(id="inputs" type="text", name="password", placeholder="password", autocomplete="off")
+			br
+			input(id="inputs" type="submit",value="login")
+
+		form(name="register", action="/user/register", method="post")
+			br
+			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+			br
+			input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
+			br
+			input(id="inputs" type="text", name="password", placeholder="password", autocomplete="off")
+			br
+			input(id="inputs" type="submit",value="register")
+		h2= message		

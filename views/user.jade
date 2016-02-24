@@ -1,0 +1,22 @@
+doctype html
+html
+	head
+	body
+		a(href='/') Hello, I'm on the users page
+		form(name="button", action="/user/posts", method="get")
+			br
+			input(id="inputs" type="submit",value="view all posts")
+			br
+		form(name="button", action="/user/:id/posts", method="get")
+			br
+			input(id="inputs" type="submit",value="view own posts")
+			br
+		form(name="button", action="/user/blog", method="post")
+			br
+			input(id="inputs" type="text" placeholder="write your blog here", autocomplete="off")
+			br
+			input(id="inputs" type="submit",value="write blog")
+			br
+		form(name="button", action="/user/logout", method="get")
+			br
+			input(id="inputs" type="submit",value="logout")
