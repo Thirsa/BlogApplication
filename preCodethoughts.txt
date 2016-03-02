@@ -53,18 +53,23 @@ Routes:
 	1: GET '/'
 		Renders: index.jade
 
-	2: GET 'user/login'
-		renders: users.jade
+	2: GET 'user/login'  //I have to use a post to log in because the sessions on the server get updated. this changed after i started 
+	                       coding
+
+		redirects: users/profile
+
+	3: GET 'user/profile'
+		renders: users.jade 
 
 	1: POST 'user/register'
 		Renders: users.jade 
 			Or renders Index.jade with the URL query message that registration was succesful and that the users has to login. 
 
-	3: GET 'user/id/Posts'
+	4: GET 'user/id/Posts'
 		Renders : users/posts.jade 
 			Only the posts where the user id applies will be selected from the database before rendering
 
-	4: GET 'user/allPost'
+	5: GET 'user/allPost'
 		Renders: users/posts.jade
 			All the posts will be selected from the database before rendering
 
@@ -72,18 +77,14 @@ Routes:
 		writes the data to the database
 		Redirects: GET 'user/ownPosts'
 
-	5: GET 'user/logout'
+	6: GET 'user/logout'
 		renders: index.jade with query string passed in that the logout was succesful.
 
-	6: GET 'user/comments'
+	7: GET 'user/comments'
 		Renders: user/postPluscomments.jade
 
 	3: POST 'user/comments'
 		Renders: itself. 
 			Writes the data from the new page to the database and renders itself again so that the page will be refreshed and the last comment will be added to the page. 
 
-//I wonder if I should manually program what to do if someone manually types the next route in the URL before being logged in. it should display the login box.
-
-
-	3: GET 'index/users.jade' 
-		can look like the home page, but now there is a menubar with the options of: view list of own posts. view list of all posts
+//I wonder if I should manually program what to do if someone manually types the next route in the URL before being logged in. it should display the login box. Or do i tacle this with the login and the profile route??

@@ -1,22 +1,58 @@
 doctype html
 html
 	head
+		script(type="text/javascript" src='http://code.jquery.com/jquery-2.2.0.js')
+		script.
+			$(document).ready(function (){
+				$('#enter').click(function(button){
+				   if($('#title').val() == '' || $('#body').val() == ''){
+				   		button.preventDefault(); //this prevents the form from going to the POST handler
+						alert('Input can not be left blank');
+				   }
+				});
+			})	
 	body
-		a(href='/') Hello, I'm on the users page
-		form(name="button", action="/user/posts", method="get")
-			br
-			input(id="inputs" type="submit",value="view all posts")
-			br
-		form(name="button", action="/user/:id/posts", method="get")
-			br
-			input(id="inputs" type="submit",value="view own posts")
-			br
-		form(name="button", action="/user/blog", method="post")
-			br
-			input(id="inputs" type="text" placeholder="write your blog here", autocomplete="off")
-			br
-			input(id="inputs" type="submit",value="write blog")
-			br
-		form(name="button", action="/user/logout", method="get")
-			br
-			input(id="inputs" type="submit",value="logout")
+		if user
+			//- a(href='/') Hello, I'm on the users page
+			h2= message
+			form(name="button", action="/user/posts", method="get")
+				br
+				input(id="inputs" type="submit",value="view all posts")
+				br
+			form(name="button", action="/user/ownPosts", method="get")
+				br
+				input(id="inputs" type="submit",value="view own posts")
+				br
+			form(name="button", action="/user/blog", method="post")
+				br
+				input(id="title" type="text" name="title" placeholder="What's the tile", autocomplete="off")
+				br
+				input(id="body" type="text" name="body" placeholder="write your blog here", autocomplete="off")
+				br
+				input(id="enter" type="submit",value="write blog")
+				br
+			form(name="button", action="/user/logout", method="get")
+				br
+				input(id="inputs" type="submit",value="logout")
+			h3 Welcome #{user.name}
+			h3 your email is: #{user.email}
+		else
+			form(name="login", action="/user/login", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="login")
+	
+			form(name="register", action="/user/register", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="register")
+			h2= message
+			h2 logged out from user.jade		

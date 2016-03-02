@@ -1,22 +1,37 @@
 doctype html
 html
 	head
+		script(type="text/javascript" src='http://code.jquery.com/jquery-2.2.0.js')
+		script.
+			$(document).ready(function (){
+				$('#enter').click(function(button){
+				   if($('#username').val() == '' || $('#email').val() == ''|| $('#password').val() == ''){
+				   		button.preventDefault(); //this prevents the form from going to the POST handler
+						alert('Input can not be left blank');
+				   }
+				});
+			})	
 	body
-		form(name="login", action="user/login", method="get")
+		if user
+			a(href='/user/profile') view profile
 			br
-			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
-			br
-			input(id="inputs" type="text", name="password", placeholder="password", autocomplete="off")
-			br
-			input(id="inputs" type="submit",value="login")
-
-		form(name="register", action="/user/register", method="post")
-			br
-			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
-			br
-			input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
-			br
-			input(id="inputs" type="text", name="password", placeholder="password", autocomplete="off")
-			br
-			input(id="inputs" type="submit",value="register")
-		h2= message		
+			a(href='/user/logout') log out
+		else
+			form(name="login", action="/user/login", method="post")
+				br
+				input(id="input" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="input" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="submit" type="submit",value="login")
+	
+			form(name="register", action="/user/register", method="post")
+				br
+				input(id="username" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="password" type="text", name="email", placeholder="email", autocomplete="off")
+				br
+				input(id="email" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="enter" type="submit",value="register")
+			h2= message		

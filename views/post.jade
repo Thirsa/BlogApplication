@@ -2,5 +2,35 @@ doctype html
 html
 	head
 	body
-		a(href='/') Hello, I'm on the post.jade page
-
+		if user
+			a(href='/') Hello, I'm on the post.jade page. click here to go to the home page
+			-console.log("this is my data on the post.jade"+ data)
+			if data===""
+				h3 There are no posts yet, create your first one!
+			else
+				-each post in data
+					div(style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', margin: '20px'})
+						h3 post title #{post.title}					
+						a(href='/user/viewPost/#{post.id}') post Body  #{post.body}
+						if post.name
+							h3 userName author #{post.name}			
+		else
+			form(name="login", action="/user/login", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="login")
+	
+			form(name="register", action="/user/register", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="register")
+			h2= message
+			h2 Ooopppss

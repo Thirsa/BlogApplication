@@ -1,0 +1,58 @@
+doctype html
+html
+	head
+		script(type="text/javascript" src='http://code.jquery.com/jquery-2.2.0.js')
+		script.
+			$(document).ready(function (){
+				$('#enter').click(function(button){
+				   if($('#message').val() == ''){
+				   		button.preventDefault(); //this prevents the form from going to the POST handler
+						alert('Input can not be left blank');
+				   }
+				});
+			})
+	body
+		if user
+			div(id='left')
+				br
+				a(href='/user/profile') Back to your profile
+				br
+				a(href='/user/posts') See what other people have shared!
+				br
+			div(id="right")
+				h2 title: #{onePost.title} 
+				h2 body: #{onePost.body}
+				span #[em by] #[b #{onePost.username}]
+				br
+				hr
+				h3 Comments
+				each comment in allcomments
+					p #[b #{comment.username}] #[em says: ]#{comment.comment}
+				h2 Leave a comment
+				h2= text
+				form(action="/user/comment/#{onePost.id}" method="post")
+					label(for="Comment") Comment
+					br
+					textarea(type="text" rows='5' cols='30' id="message" name="comment" placeholder="So what do you think?")
+					br
+					input(type="submit" id="enter" name="test" value="Leave a comment")
+		else
+			form(name="login", action="/user/login", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="login")
+	
+			form(name="register", action="/user/register", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="register")
+			h2= message
+			h2 Ooopppssieieie	
