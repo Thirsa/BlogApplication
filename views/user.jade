@@ -12,47 +12,34 @@ html
 				});
 			})	
 	body
-		if user
-			//- a(href='/') Hello, I'm on the users page
-			h2= message
-			form(name="button", action="/user/posts", method="get")
-				br
-				input(id="inputs" type="submit",value="view all posts")
-				br
-			form(name="button", action="/user/ownPosts", method="get")
-				br
-				input(id="inputs" type="submit",value="view own posts")
-				br
-			form(name="button", action="/user/blog", method="post")
-				br
-				input(id="title" type="text" name="title" placeholder="What's the tile", autocomplete="off")
-				br
-				input(id="body" type="text" name="body" placeholder="write your blog here", autocomplete="off")
-				br
-				input(id="enter" type="submit",value="write blog")
-				br
-			form(name="button", action="/user/logout", method="get")
-				br
-				input(id="inputs" type="submit",value="logout")
-			h3 Welcome #{user.name}
-			h3 your email is: #{user.email}
-		else
-			form(name="login", action="/user/login", method="post")
-				br
-				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
-				br
-				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
-				br
-				input(id="inputs" type="submit",value="login")
-	
-			form(name="register", action="/user/register", method="post")
-				br
-				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
-				br
-				input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
-				br
-				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
-				br
-				input(id="inputs" type="submit",value="register")
-			h2= message
-			h2 logged out from user.jade		
+		h2= message
+		form(name="button", action="/posts", method="get")
+			br
+			input(id="inputs" type="submit",value="view all posts")
+			br
+		form(name="button", action="/user/#{user.id}/posts", method="get")
+			br
+			input(id="inputs" type="submit",value="view own posts")
+			br
+		form(name="button", action="/posts", method="post")
+			br
+			input(id="title" type="text" name="title" placeholder="What's the tile", autocomplete="off")
+			br
+			input(id="body" type="text" name="body" placeholder="write your blog here", autocomplete="off", style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', height:'300px'})
+			br
+			input(id="enter" type="submit",value="write blog")
+			br
+		h3= error
+		form(name="button", action="/logout", method="get")
+			br
+			input(id="inputs" type="submit",value="logout")
+		h3 Welcome #{user.name}
+		h3 your email is: #{user.email}
+		h3 You can change your password here if you want
+		form(name="button", action="/user/#{user.id}/password", method="post")
+			br
+			input(id="oldPassword", name="oldPassword" type="text", placeholder="current password")
+			br
+			input(id="newPassword", name="newPassword" type="password", placeholder="new password") 	
+			br
+			input(id="inputs" type="submit",value="change password") 

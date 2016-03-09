@@ -1,0 +1,25 @@
+doctype html
+html
+	head
+	body
+		h2 Welcome to this awesome blog website! This is the best one out there.
+		| Please login or register
+		form(name="login", action="/login", method="post")
+			br
+			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+			br
+			input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+			br
+			input(id="inputs" type="submit",value="login")
+
+		form(name="register", action="/user/new", method="post")
+			br
+			input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+			br
+			input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
+			br
+			input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+			br
+			input(id="inputs" type="submit",value="register")
+		h2= message
+		h2 This is the login again page

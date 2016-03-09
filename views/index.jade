@@ -12,26 +12,9 @@ html
 				});
 			})	
 	body
-		if user
-			a(href='/user/profile') view profile
-			br
-			a(href='/user/logout') log out
-		else
-			form(name="login", action="/user/login", method="post")
-				br
-				input(id="input" type="text", name="username", placeholder="username", autocomplete="off")
-				br
-				input(id="input" type="password", name="password", placeholder="password", autocomplete="off")
-				br
-				input(id="submit" type="submit",value="login")
-	
-			form(name="register", action="/user/register", method="post")
-				br
-				input(id="username" type="text", name="username", placeholder="username", autocomplete="off")
-				br
-				input(id="password" type="text", name="email", placeholder="email", autocomplete="off")
-				br
-				input(id="email" type="password", name="password", placeholder="password", autocomplete="off")
-				br
-				input(id="enter" type="submit",value="register")
-			h2= message		
+		a(href='/profile') view profile
+		br
+		a(href='/logout') log out	
+		//- form(name="button", action="/logout", method="get")
+		//- 	br
+		//- 	input(id="inputs" type="submit",value="logout")	
