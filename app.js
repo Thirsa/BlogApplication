@@ -156,7 +156,7 @@ app.get('/posts', function (request, response){
 app.get('/user/:id/posts', function (request, response){
 	var user = request.session.user
 	if (user === undefined) {
-		var message = "logged out from route /user/:id/posts. please login again :)"
+		var message = "Please login again :)"
 		response.render ('index', {message:message})
 	} 
 	else {
@@ -178,7 +178,7 @@ app.post('/posts', function (request, response){
 	var user = request.session.user
 
 	if (user === undefined){
-		var message = "logged out from /posts. please login again :)"
+		var message = "Please login again :)"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -218,7 +218,7 @@ app.get('/posts/:id', function (request, response){
 	var user = request.session.user;
 
 	if (user === undefined){
-		var message = "logged out from route posts/:id. please login again :)"
+		var message = "Please login again :)"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -249,7 +249,7 @@ app.post('/user/comment/:postId', function (request, response){
 	var requestParameters = request.params;
 
 	if (user === undefined){
-		var message = "logged out from route posts. please login again :)"
+		var message = "Please login again :)"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -276,7 +276,7 @@ app.post ('/user/:id/password', function (request, response){
 	var newPassword = request.body.newPassword
 
 	if (user === undefined) {
-		var message = "logged out from route /user/:id/password. please login again :)"
+		var message = "Please login again :)"
 		response.render ('index', {message:message})
 	}
 	else {
