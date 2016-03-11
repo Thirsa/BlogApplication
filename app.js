@@ -15,35 +15,29 @@ var sequelize = new Sequelize('blog', process.env.POSTGRES_USER, null, {
 var Users = sequelize.define('users', {
 	name:{
        type: Sequelize.STRING,
-       unique: true,
-       allowNull: false
+       unique: true
     },
 	email: {
 		type: Sequelize.STRING,
-		unique: true,
-		allowNull: false
+		unique: true
 	},     
 	password:{
-		type: Sequelize.STRING,
-		allowNull: false
+		type: Sequelize.STRING
 	} 
 });
 
 var Posts = sequelize.define('posts', {
 	title: {
-		type: Sequelize.STRING,
-		allowNull: false
+		type: Sequelize.STRING
 	},
 	body: {
-		type: Sequelize.TEXT,
-		allowNull:false
+		type: Sequelize.TEXT
 	}
 });
 
 var Comments = sequelize.define('comments', {
 	body: {
-		type: Sequelize.TEXT,
-		allowNull: false	
+		type: Sequelize.TEXT
 	}
 });
 
@@ -74,10 +68,10 @@ app.get('/', function (request, response){
 	var user = request.session.user;
 
 	if (user === undefined){
-		response.render('loginAgain',{message: request.query.message})
+		response.render('index',{message: request.query.message})
 	}
 	else {
-		response.render('index', {user: user})
+		response.render('index',{user: user})
 	}
 });
 
@@ -95,7 +89,7 @@ app.post('/login', function (request, response){
 			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
 		}
 	}, function (error){
-		response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
 	})
 });
 
@@ -104,11 +98,10 @@ app.get('/profile', function (request, response) {
 
 	if (user === undefined){
 		var message = "please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
 	else {
-		console.log ("Request.query.message" + request.query.message)
-		response.render('user', {user: user, message: request.query.message}) //request.query.message?? what does it do here??
+		response.render('user', {user: user, message: request.query.message})
 	}
 })
 
@@ -123,12 +116,10 @@ app.post('/user/new', function (request, response){
 			password: request.body.password
 		}).then(function (user) {
 			response.redirect('/?message=' + encodeURIComponent("You can now login"))
-
 		}, function (error){
 			if (error.name === "SequelizeUniqueConstraintError" || error.email === "SequelizeUniqueConstraintError" || error.password === "SequelizeUniqueConstraintError"){
 				response.redirect('/?message=' + encodeURIComponent("the constraints on the database have been violated"))						
 			} 
-			
 			else if (error.name === "SequelizeDatabaseError" || error.email === "SequelizeDatabaseError" || error.password === "SequelizeDatabaseError"){
 				response.redirect('/?message=' + encodeURIComponent("Oops, seems like you fucked up"))										
 			}
@@ -144,7 +135,7 @@ app.get('/posts', function (request, response){
 
 	if (user === undefined){
 		var message = "please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
 	else {
 		Posts.findAll({include: [Users]}).then(function (posts){
@@ -157,18 +148,16 @@ app.get('/posts', function (request, response){
 					createdAt: post.dataValues.createdAt				
 				}
 			})
-			console.log ("heres my data from the /posts route" + typeof data)
-			// if ()
 			response.render('post', {data: data.reverse(), user: user})		
 		})
 	}
 })
 
-app.get('/user/:id/posts', function (request, response){ //switch the order of the if and else around?
+app.get('/user/:id/posts', function (request, response){
 	var user = request.session.user
 	if (user === undefined) {
 		var message = "logged out from route /user/:id/posts. please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	} 
 	else {
 		Posts.findAll({include: [Users], where: { userId: user.id}}).then(function (posts){
@@ -185,14 +174,13 @@ app.get('/user/:id/posts', function (request, response){ //switch the order of t
 	}
 });
 
-app.post('/posts', function (request, response){ //Can i use a if user === undefined or something here?
+app.post('/posts', function (request, response){
 	var user = request.session.user
 
 	if (user === undefined){
 		var message = "logged out from /posts. please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
-
 	else {
 		if (request.body.title === "" || request.body.body === "") {
 			response.redirect('/profile?message=' + encodeURIComponent("please fill in all the boxes"))
@@ -205,11 +193,10 @@ app.post('/posts', function (request, response){ //Can i use a if user === undef
 			}).then(function (data){response.redirect('/user/:id/posts')
 			}, function (error) {
 				if (error.name === "SequelizeDatabaseError"){
-					console.log (error);
-					var error = "The post is too long or something" //think about if this is the apropriate message
+					var error = "Oops, something went wrong, try again" //think about if this is the apropriate message
 					response.render ('user', {user:user, error:error})
 				}
-				else if (error){ //can you end with an else if? instead of just an else?
+				else if (error){
 					throw error;
 				}
 			})		
@@ -220,7 +207,7 @@ app.post('/posts', function (request, response){ //Can i use a if user === undef
 app.get('/logout', function (request, response){
 	request.session.destroy(function(error) {
 		if(error) {
-			throw error; //do I want to throw an error or is that klantontvriendelijk?
+			throw error;
 		}
 		response.redirect('/?message=' + encodeURIComponent("Successfully logged out"));
 	})
@@ -232,7 +219,7 @@ app.get('/posts/:id', function (request, response){
 
 	if (user === undefined){
 		var message = "logged out from route posts/:id. please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
 	else {
 		Posts.findOne({include: Users, where: {id: postId}}).then(function (post){
@@ -251,7 +238,7 @@ app.get('/posts/:id', function (request, response){
 						createdAt: post.dataValues.createdAt
 					}
 				})
-				response.render('postPlusComments', {onePost: onePost, allcomments:allcomments.reverse(), user: user})
+				response.render('postPlusComments', {onePost: onePost, allcomments:allcomments, user: user, message: request.query.message})
 			})
 		})
 	}
@@ -263,7 +250,7 @@ app.post('/user/comment/:postId', function (request, response){
 
 	if (user === undefined){
 		var message = "logged out from route posts. please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
 	else {
 		Comments.create ({
@@ -274,10 +261,9 @@ app.post('/user/comment/:postId', function (request, response){
 			response.redirect('/posts/' + requestParameters.postId)
 		}, function (error) {
 			if (error.name === "SequelizeDatabaseError"){
-				console.log (error)
-				// response.render // render what page? 
+				response.redirect('/posts/' + requestParameters.postId + '/?message=' + encodeURIComponent("Something went wrong, please try to comment again :)")) // render what page? 
 			}
-			else { //change if into else if the above is commented in
+			else {
 				throw error;
 			}
 		})
@@ -291,26 +277,21 @@ app.post ('/user/:id/password', function (request, response){
 
 	if (user === undefined) {
 		var message = "logged out from route /user/:id/password. please login again :)"
-		response.render ('loginAgain', {message:message})
+		response.render ('index', {message:message})
 	}
 	else {
-
 		if (request.body.oldPassword === "" || request.body.newPassword === ""){
 			response.redirect('/profile?message=' + encodeURIComponent("Please fill in the old password and the new password"))
 		}
 		else if (request.body.oldPassword !== user.password) {
-			response.redirect('/profile?message=' + encodeURIComponent("You password is incorrect"))		
+			response.redirect('/profile?message=' + encodeURIComponent("Your password is incorrect"))		
 		}
 		else if (request.body.oldPassword === user.password) {
-			console.log ("Im here first")
 			Users.findOne({where: {id: user.id}}).then(function (target){
-				console.log ("Console.logging the user"+ JSON.stringify(target))
-
 				target.update({password: newPassword}).then(function (user){
-					console.log ("I'm here!!")
 					request.session.user = user;
-					var message = "Your password has been updated"
-					response.render('user', {user:user,message:message})
+					var messagePass = "Your password has been updated"
+					response.render('user', {user:user,messagePass:messagePass})
 				}, function (error) {
 					if (error) {
 						throw error;
@@ -325,15 +306,22 @@ app.post ('/user/:id/password', function (request, response){
 })
 
 //I have to take the force out (if it's there) when im done with the app
-sequelize.sync().then(function () {
-	var server = app.listen(3001, function () {
+sequelize.sync({force:true}).then(function () {
+	var server = app.listen(3000, function () {
 		console.log(server.address().port);
 	});
 });
 
+//TODO:
 //i still have to do something with capitilizing the names when register or log in
-// i still have to set the type value of posts and comments to text
-//I still probably have to change the post route to change my password into a put?
 //(how) do I edit my posts and comments?
-//Get the created date in a different format
-//
+//Get the createdAt date in a different format
+//I have to trim all the input fields so that solely spaces will not be written to the database
+
+//Notes to self:
+//only worry about performance when you have over a million or 10 million of something
+//postgres database diagram.. to find a app that will give me a graphical view of my database
+//there are two general rules about doing something if something === undefined first or do the thing if something !== undefined.. there's no better one..
+//I probably cant use a put request to change the password because forms probably only allow post and get request... so I could use Ajax for that.. but that might be too fancy?
+// allowNull: false //Jon said: only probably have this protection also on the database (not only in the app) if theres multiple components(?) using your database etc... having it for a blog app is overkill
+

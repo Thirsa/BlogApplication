@@ -12,7 +12,10 @@ html
 				});
 			})	
 	body
-		h2= message
+		if messagePass === "Your password is incorrect"
+			h2(style={color:'red'}) #{message}
+		else	
+			h2= message
 		form(name="button", action="/posts", method="get")
 			br
 			input(id="inputs" type="submit",value="view all posts")
@@ -23,9 +26,9 @@ html
 			br
 		form(name="button", action="/posts", method="post")
 			br
-			input(id="title" type="text" name="title" placeholder="What's the tile", autocomplete="off")
+			input(id="title" type="text" name="title" placeholder="Give me a title :)", autocomplete="off")
 			br
-			input(id="body" type="text" name="body" placeholder="write your blog here", autocomplete="off", style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', height:'300px'})
+			textarea(id="body", type="text", name="body", rows='10' cols='30', placeholder="Anything to share?", autocomplete="off")
 			br
 			input(id="enter" type="submit",value="write blog")
 			br
@@ -36,6 +39,10 @@ html
 		h3 Welcome #{user.name}
 		h3 your email is: #{user.email}
 		h3 You can change your password here if you want
+		if messagePass === "Your password is incorrect"
+			h2(style={color:'red'}) #{message}
+		else	
+			h3= messagePass
 		form(name="button", action="/user/#{user.id}/password", method="post")
 			br
 			input(id="oldPassword", name="oldPassword" type="text", placeholder="current password")

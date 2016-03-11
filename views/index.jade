@@ -5,16 +5,41 @@ html
 		script.
 			$(document).ready(function (){
 				$('#enter').click(function(button){
+					$.('#username').val() = $.('#username').trim();
+					-console.log ("helllooooo, im here"+ #username.val())
 				   if($('#username').val() == '' || $('#email').val() == ''|| $('#password').val() == ''){
 				   		button.preventDefault(); //this prevents the form from going to the POST handler
 						alert('Input can not be left blank');
 				   }
 				});
-			})	
+			})		
 	body
-		a(href='/profile') view profile
-		br
-		a(href='/logout') log out	
-		//- form(name="button", action="/logout", method="get")
-		//- 	br
-		//- 	input(id="inputs" type="submit",value="logout")	
+		if user
+			a(href='/profile') view profile
+			br
+			a(href='/logout') log out	
+			//- form(name="button", action="/logout", method="get")
+			//- 	br
+			//- 	input(id="inputs" type="submit",value="logout")
+		else
+			h2 Welcome to this awesome blog website! This is the best one out there.
+			| Please login or register
+			form(name="login", action="/login", method="post")
+				br
+				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="inputs" type="submit",value="login")
+				br
+			form(name="register", action="/user/new", method="post")
+				br
+				input(id="username" type="text", name="username", placeholder="username", autocomplete="off")
+				br
+				input(id="email" type="text", name="email", placeholder="email", autocomplete="off")
+				br
+				input(id="password" type="password", name="password", placeholder="password", autocomplete="off")
+				br
+				input(id="enter" type="submit",name="enter", value="enter")
+			h2= message
+			h2 This is the login again page			

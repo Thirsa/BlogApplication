@@ -18,10 +18,11 @@ html
 			br
 			a(href='/posts') See what other people have shared!
 			br
+		h3= message
 		div(id="right")
 			h2 title: #{onePost.title} 
 			h2 body: #{onePost.body}
-			h2 created at: #{onePost.createdAt}
+			h3 created at: #{onePost.createdAt}
 			span #[em by] #[b #{onePost.username}]
 			br
 			hr
