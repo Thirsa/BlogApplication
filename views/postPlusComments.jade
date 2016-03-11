@@ -12,23 +12,32 @@ html
 				});
 			})
 	body
+		form(name="button", action="/logout", method="get")
+			br
+			input(id="inputs" type="submit",value="logout")
 		div(id='left')
 			br
-			a(href='/profile') Back to your profile
+			br
+			a(href='/profile') Go back to your profile
+			br
+			br
+			a(href='/user/#{user.id}/posts') Go back to view your on posts
+			br
 			br
 			a(href='/posts') See what other people have shared!
+			br
 			br
 		h3= message
 		div(id="right")
 			h2 title: #{onePost.title} 
-			h2 body: #{onePost.body}
+			h2 Post: #{onePost.body}
 			h3 created at: #{onePost.createdAt}
 			span #[em by] #[b #{onePost.username}]
 			br
 			hr
 			h3 Comments
 			if allcomments.length === 0
-				h3 There are no comments yet, be the first!				
+				h3(style={color:'red'}) There are no comments yet, be the first!				
 			each comment in allcomments		
 				if comment.username !== user.name
 					h3 You have not commented yet, make a comment!

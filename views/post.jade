@@ -2,15 +2,21 @@ doctype html
 html
 	head
 	body
-		a(href='/') Hello, I'm on the post.jade page. click here to go to the home page
+		form(name="button", action="/logout", method="get")
+			br
+			input(id="inputs" type="submit",value="logout")
+			br
+			br
+		a(href='/profile') Go back to your profile
 		-console.log("this is my data on the post.jade"+ data + data.length)
 		if data.length===0
-			h3 There are no posts yet, create your first one!				
+			h3(style={color:'red'}) There are no posts yet, create your first one!				
 		else
 			each post in data
 				div(style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', margin: '20px'})
-					h3 post title #{post.title}					
-					a(href='/posts/#{post.id}') post Body  #{post.body}
+					h3 Title: #{post.title}	
+					p Post:				
+					a(href='/posts/#{post.id}') #{post.body}
 					if post.name
-						h3 userName author #{post.name}
+						p Author: #{post.name}
 					h4 Written on #{post.createdAt}
