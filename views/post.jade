@@ -18,5 +18,8 @@ html
 					p Post:				
 					a(href='/posts/#{post.id}') #{post.body}
 					if post.name
-						p Author: #{post.name}
+						if post.name === user.name
+							p(style={color:'red'}) Author: You wrote this :)
+						else
+							p Author: #{post.name}
 					h4 Written on #{post.createdAt}
