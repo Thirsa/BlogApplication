@@ -3,6 +3,7 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var session = require('express-session')
 var Sequelize = require('sequelize');
+var bcrypt = require('bcrypt');
 
 var sequelize = new Sequelize('blog', process.env.POSTGRES_USER, null, {
 	host: 'localhost',
@@ -75,23 +76,70 @@ app.get('/', function (request, response){
 	}
 });
 
+
 app.post('/login', function (request, response){
-	Users.findOne({
-		where: {
-			name: request.body.username
-		}
-	}).then(function (users){
-		if(users !== null && request.body.password === users.password){ //it's if they typed their username wrong...
-			request.session.user = users;
-			response.redirect('/profile');
-		}
-		else {
-			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
-		}
-	}, function (error){
-			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
-	})
+	// var user = request.session.user; 
+	
+	// if (user === undefined){
+	// 	var message = "please login again :)"
+	// 	response.render ('index', {message:message})
+
+	// } 
+	// else {
+
+		Users.findOne({
+			where: {
+				name: request.body.username
+			}
+		}).then(function (users){
+			if (users !== null){
+				console.log ("This is my password" + JSON.stringify(users))
+				bcrypt.compare(request.body.password, users.password, function (error, res){
+					console.log ("this is my response" + " " + response)
+					
+					if (res === true){
+						request.session.user = users;
+						console.log ("console.logging users" + users);
+						response.redirect('/profile');				
+					}
+
+					else if (error){
+						throw error;
+					}
+					else {
+						response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+					}
+				}).then(function (error, response){
+
+				})
+			} 
+			else {
+				response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+			}
+		});
+
+	// }
+
 });
+
+
+// app.post('/login', function (request, response){
+// 	Users.findOne({
+// 		where: {
+// 			name: request.body.username
+// 		}
+// 	}).then(function (users){
+// 		if(users !== null && request.body.password === users.password){ //it's if they typed their username wrong...
+// 			request.session.user = users;
+// 			response.redirect('/profile');
+// 		}
+// 		else {
+// 			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+// 		}
+// 	}, function (error){
+// 			response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+// 	})
+// });
 
 app.get('/profile', function (request, response) {
 	var user = request.session.user; 
@@ -110,21 +158,28 @@ app.post('/user/new', function (request, response){
 		response.redirect('/?message=' + encodeURIComponent("please fill in all the boxes"))				
 	}
 	else {
-		Users.create({
-			name: request.body.username,
-			email: request.body.email,
-			password: request.body.password
-		}).then(function (user) {
-			response.redirect('/?message=' + encodeURIComponent("You can now login"))
-		}, function (error){
-			if (error.name === "SequelizeUniqueConstraintError" || error.email === "SequelizeUniqueConstraintError" || error.password === "SequelizeUniqueConstraintError"){
-				response.redirect('/?message=' + encodeURIComponent("the constraints on the database have been violated"))						
-			} 
-			else if (error.name === "SequelizeDatabaseError" || error.email === "SequelizeDatabaseError" || error.password === "SequelizeDatabaseError"){
-				response.redirect('/?message=' + encodeURIComponent("Oops, seems like you fucked up"))										
-			}
-			else { 
+		bcrypt.hash(request.body.password, 8, function (error, hash){
+			if (error){
 				throw error;
+			}
+			else {
+				Users.create({
+					name: request.body.username,
+					email: request.body.email,
+					password: hash
+				}).then(function (user) {
+					response.redirect('/?message=' + encodeURIComponent("You can now login"))
+				}, function (error){
+					if (error.name === "SequelizeUniqueConstraintError" || error.email === "SequelizeUniqueConstraintError" || error.password === "SequelizeUniqueConstraintError"){
+						response.redirect('/?message=' + encodeURIComponent("the constraints on the database have been violated"))						
+					} 
+					else if (error.name === "SequelizeDatabaseError" || error.email === "SequelizeDatabaseError" || error.password === "SequelizeDatabaseError"){
+						response.redirect('/?message=' + encodeURIComponent("Oops, seems like you fucked up"))										
+					}
+					else { 
+						throw error;
+					}
+				})
 			}
 		})
 	}		
@@ -283,30 +338,70 @@ app.post ('/user/:id/password', function (request, response){
 		if (request.body.oldPassword === "" || request.body.newPassword === ""){
 			response.redirect('/profile?message=' + encodeURIComponent("Please fill in the old password and the new password"))
 		}
-		else if (request.body.oldPassword !== user.password) {
-			response.redirect('/profile?message=' + encodeURIComponent("Your password is incorrect"))		
-		}
-		else if (request.body.oldPassword === user.password) {
+		else{
 			Users.findOne({where: {id: user.id}}).then(function (target){
-				target.update({password: newPassword}).then(function (user){
-					request.session.user = user;
-					var messagePass = "Your password has been updated"
-					response.render('user', {user:user,messagePass:messagePass})
-				}, function (error) {
-					if (error) {
-						throw error;
+				bcrypt.compare(request.body.oldPassword, target.password, function (error, res){
+					if (res === true){
+						bcrypt.hash(request.body.newPassword, 8, function (error, hash){
+							if (error){
+								throw error;
+							}
+							else {
+								target.update({password: hash}).then(function (user){
+									request.session.user = user;
+									var messagePass = "Your password has been updated"
+									response.render('user', {user:user,messagePass:messagePass})
+								})
+
+							}
+						})
+					}
+					else {
+						response.redirect('/profile?message=' + encodeURIComponent("Your password is incorrect"))		
 					}
 				})
 			})
 		}
-		else{
-			response.redirect('/profile?message=' + encodeURIComponent("God knows what, but something went wrong"))		
-		}
 	}
 })
 
+// app.post ('/user/:id/password', function (request, response){
+// 	var user = request.session.user
+// 	var userId = request.params
+// 	var newPassword = request.body.newPassword
+
+// 	if (user === undefined) {
+// 		var message = "Please login again :)"
+// 		response.render ('index', {message:message})
+// 	}
+// 	else {
+// 		if (request.body.oldPassword === "" || request.body.newPassword === ""){
+// 			response.redirect('/profile?message=' + encodeURIComponent("Please fill in the old password and the new password"))
+// 		}
+// 		else if (request.body.oldPassword !== user.password) {
+// 			response.redirect('/profile?message=' + encodeURIComponent("Your password is incorrect"))		
+// 		}
+// 		else if (request.body.oldPassword === user.password) {
+// 			Users.findOne({where: {id: user.id}}).then(function (target){
+// 				target.update({password: newPassword}).then(function (user){
+// 					request.session.user = user;
+// 					var messagePass = "Your password has been updated"
+// 					response.render('user', {user:user,messagePass:messagePass})
+// 				}, function (error) {
+// 					if (error) {
+// 						throw error;
+// 					}
+// 				})
+// 			})
+// 		}
+// 		else{
+// 			response.redirect('/profile?message=' + encodeURIComponent("God knows what, but something went wrong"))		
+// 		}
+// 	}
+// })
+
 //I have to take the force out (if it's there) when im done with the app
-sequelize.sync({force:true}).then(function () {
+sequelize.sync().then(function () {
 	var server = app.listen(3000, function () {
 		console.log(server.address().port);
 	});
