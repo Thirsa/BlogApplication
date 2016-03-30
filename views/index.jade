@@ -5,12 +5,12 @@ html
 		script.
 			$(document).ready(function (){
 				$('#enter').click(function(button){
-					$.('#username').val() = $.('#username').trim(); //this doesn't work yet
-					-console.log ("helllooooo, im here"+ #username.val())
+					$.('#username').val() = $.('#username').trim(); //this doesn't work yet   // use the .length attribute
+					// -console.log ("helllooooo, im here"+ #username.val())
 				   if($('#username').val() == '' || $('#email').val() == ''|| $('#password').val() == ''){
 				   		button.preventDefault(); //this prevents the form from going to the POST handler
-						alert('Input can not be left blank');
-				   }
+						alert('Input can not be left blank'); //instead of an alert use... (dont use alert because people hate it now) give the h2= message an id, grab the element and give it a value
+				   }			//with like $('#error-message').html("please fill out shit");
 				});
 			})		
 	body
@@ -41,4 +41,8 @@ html
 				input(id="password" type="password", name="password", placeholder="password", autocomplete="off")
 				br
 				input(id="enter" type="submit",name="enter", value="enter")
-			h2= message
+			h2(id="error-message")= message
+
+
+
+// use the required attribute from html ... like input(id="inputs" REQUIRED type="text", name="username", placeholder="username", autocomplete="off")
