@@ -52,7 +52,7 @@ Posts.hasMany(Comments);
 Comments.belongsTo(Posts);
 
 var app = express();
-
+	
 app.use(session({
 	secret: 'oh wow very secret much security',
 	resave: true,
@@ -412,7 +412,8 @@ sequelize.sync().then(function () {
 //(how) do I edit my posts and comments?
 //Get the createdAt date in a different format
 //I have to trim all the input fields so that solely spaces will not be written to the database
-
+//Make sure to "return" after an If validation so that the server doesn't try to execute the rest of the code
+ 
 //Notes to self:
 //only worry about performance when you have over a million or 10 million of something
 //postgres database diagram.. to find a app that will give me a graphical view of my database
