@@ -1,0 +1,21 @@
+$red: red;
+
+body {
+	text-align: center;
+}
+
+#inputs {
+	border: 1px solid $red;
+}
+
+#post {
+	border: 1px solid red;
+	color: black;
+	background: cyan;
+	width: 500px;
+	margin: 20px;
+	margin-left: auto;
+	margin-right: auto;	
+}
+
+ // style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', margin: '20px'}
