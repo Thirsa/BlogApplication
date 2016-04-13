@@ -1,11 +1,12 @@
 doctype html
 html
-	head
+	head 
+		link(rel="stylesheet" type="text/css" href="../css/mycss.css")
 		script(type="text/javascript" src='http://code.jquery.com/jquery-2.2.0.js')
 		script.
 			$(document).ready(function (){
 				$('#enter').click(function(button){
-					$.('#username').val() = $.('#username').trim(); //this doesn't work yet   // use the .length attribute
+					// $.('#username').val() = $.('#username').trim(); //this doesn't work yet   // use the .length attribute
 					// -console.log ("helllooooo, im here"+ #username.val())
 				   if($('#username').val() == '' || $('#email').val() == ''|| $('#password').val() == ''){
 				   		button.preventDefault(); //this prevents the form from going to the POST handler
@@ -17,21 +18,20 @@ html
 		if user
 			a(href='/profile') view profile
 			br
-			a(href='/logout') log out	
-			//- form(name="button", action="/logout", method="get")
-			//- 	br
-			//- 	input(id="inputs" type="submit",value="logout")
+			a(href='/logout') log out 
 		else
-			h2 Welcome to this awesome blog website! This is the best one out there.
-			| Please login or register
+			h2 Welcome to this awesome blog website! 
+			h2 This is the best one out there.
+			h4 Login:
 			form(name="login", action="/login", method="post")
 				br
-				input(id="inputs" type="text", name="username", placeholder="username", autocomplete="off")
+				input(id="inputs" type="text", name="email", placeholder="email", autocomplete="off")
 				br
 				input(id="inputs" type="password", name="password", placeholder="password", autocomplete="off")
 				br
 				input(id="inputs" type="submit",value="login")
 				br
+			h4 register:
 			form(name="register", action="/user/new", method="post")
 				br
 				input(id="username" type="text", name="username", placeholder="username", autocomplete="off")

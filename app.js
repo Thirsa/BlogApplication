@@ -1,18 +1,22 @@
+// jslint node: true;
+"use strict";
 var express = require('express');
 var fs = require('fs');
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
+var	sass = require('node-sass');
+var sassMiddleware = require('node-sass-middleware');
+var path = require('path');
 
+//Database connection
 var sequelize = new Sequelize('blog', process.env.POSTGRES_USER, null, {
 	host: 'localhost',
 	dialect: 'postgres',
-	// define: {
-	// 	timestamps: false //I comment this out because I want to have the date and setting it to true didn't work
-	// }
 });
 
+//Table definitions
 var Users = sequelize.define('users', {
 	name:{
        type: Sequelize.STRING,
@@ -36,12 +40,18 @@ var Posts = sequelize.define('posts', {
 	}
 });
 
+// var Posts = sequelize.define('posts', {
+// 	title:Sequelize.STRING,
+// 	body:Sequelize.TEXT
+// });
+
 var Comments = sequelize.define('comments', {
 	body: {
 		type: Sequelize.TEXT
 	}
 });
 
+//Table relations
 Users.hasMany(Posts);
 Posts.belongsTo(Users);
 
@@ -51,20 +61,32 @@ Comments.belongsTo(Users);
 Posts.hasMany(Comments);
 Comments.belongsTo(Posts);
 
+//Start application and configurations
 var app = express();
-	
+
+app.use(
+	sassMiddleware({
+    src: __dirname + '/sass', 
+    dest: __dirname + '/public',
+    debug: true,       
+ 	})
+); 
+
 app.use(session({
 	secret: 'oh wow very secret much security',
 	resave: true,
 	saveUninitialized: false
 }));
 
-app.use(express.static('/public'));
+app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static('/public'));
+
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.set('views', './views');
 app.set('view engine', 'jade');
 
+//HTTP request handlers definitions; RESTful routes
 app.get('/', function (request, response){
 	var user = request.session.user;
 
@@ -78,50 +100,34 @@ app.get('/', function (request, response){
 
 
 app.post('/login', function (request, response){
-	// var user = request.session.user; 
-	
-	// if (user === undefined){
-	// 	var message = "please login again :)"
-	// 	response.render ('index', {message:message})
+	Users.findOne({
+		where: {
+			email: request.body.email
+		}
+	}).then(function (users){
+		if (users !== null){
+			bcrypt.compare(request.body.password, users.password, function (error, res){
+				if (res === true){
+					request.session.user = users;
+					response.redirect('/profile');				
+				}
+				else if (error){
+					throw error;
+				}
+				else {
+					response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
+				}
+			}).then(function (error, response){
 
-	// } 
-	// else {
-
-		Users.findOne({
-			where: {
-				name: request.body.username
-			}
-		}).then(function (users){
-			if (users !== null){
-				console.log ("This is my password" + JSON.stringify(users))
-				bcrypt.compare(request.body.password, users.password, function (error, res){
-					console.log ("this is my response" + " " + response)
-					
-					if (res === true){
-						request.session.user = users;
-						console.log ("console.logging users" + users);
-						response.redirect('/profile');				
-					}
-
-					else if (error){
-						throw error;
-					}
-					else {
-						response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
-					}
-				}).then(function (error, response){
-
-				})
-			} 
-			else {
-				response.redirect('/?message=' + encodeURIComponent("Invalid username or password"))
-			}
-		});
-
-	// }
-
+			})
+		} 
+		else {
+			response.redirect('/?message=' + encodeURIComponent("Please fill in your username"))
+		}
+	});
 });
 
+//Same as above, without bcrypt
 
 // app.post('/login', function (request, response){
 // 	Users.findOne({
@@ -145,7 +151,7 @@ app.get('/profile', function (request, response) {
 	var user = request.session.user; 
 
 	if (user === undefined){
-		var message = "please login again :)"
+		var message = "please login again"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -155,7 +161,7 @@ app.get('/profile', function (request, response) {
 
 app.post('/user/new', function (request, response){
 	if (request.body.username === "" || request.body.email === "" || request.body.password === "") {
-		response.redirect('/?message=' + encodeURIComponent("please fill in all the boxes"))				
+		response.redirect('/?message=' + encodeURIComponent("please fill in all the input fields"))				
 	}
 	else {
 		bcrypt.hash(request.body.password, 8, function (error, hash){
@@ -174,7 +180,7 @@ app.post('/user/new', function (request, response){
 						response.redirect('/?message=' + encodeURIComponent("the constraints on the database have been violated"))						
 					} 
 					else if (error.name === "SequelizeDatabaseError" || error.email === "SequelizeDatabaseError" || error.password === "SequelizeDatabaseError"){
-						response.redirect('/?message=' + encodeURIComponent("Oops, seems like you fucked up"))										
+						response.redirect('/?message=' + encodeURIComponent("Oops, seems like you fucked up in a way"))										
 					}
 					else { 
 						throw error;
@@ -206,7 +212,7 @@ app.get('/posts', function (request, response){
 			response.render('post', {data: data.reverse(), user: user})		
 		})
 	}
-})
+});
 
 app.get('/user/:id/posts', function (request, response){
 	var user = request.session.user
@@ -238,7 +244,7 @@ app.post('/posts', function (request, response){
 	}
 	else {
 		if (request.body.title === "" || request.body.body === "") {
-			response.redirect('/profile?message=' + encodeURIComponent("please fill in all the boxes"))
+			response.redirect('/profile?message=' + encodeURIComponent("please fill in all the input fields"))
 		}
 		else {
 			Posts.create ({
@@ -273,7 +279,7 @@ app.get('/posts/:id', function (request, response){
 	var user = request.session.user;
 
 	if (user === undefined){
-		var message = "Please login again :)"
+		var message = "Please login again"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -316,7 +322,7 @@ app.post('/user/comment/:postId', function (request, response){
 			response.redirect('/posts/' + requestParameters.postId)
 		}, function (error) {
 			if (error.name === "SequelizeDatabaseError"){
-				response.redirect('/posts/' + requestParameters.postId + '/?message=' + encodeURIComponent("Something went wrong, please try to comment again :)")) // render what page? 
+				response.redirect('/posts/' + requestParameters.postId + '/?message=' + encodeURIComponent("Something went wrong, please try to comment again :)")) 
 			}
 			else {
 				throw error;
@@ -331,7 +337,7 @@ app.post ('/user/:id/password', function (request, response){
 	var newPassword = request.body.newPassword
 
 	if (user === undefined) {
-		var message = "Please login again :)"
+		var message = "Please login again"
 		response.render ('index', {message:message})
 	}
 	else {
@@ -363,7 +369,9 @@ app.post ('/user/:id/password', function (request, response){
 			})
 		}
 	}
-})
+});
+
+//Same as above, without bcrypt
 
 // app.post ('/user/:id/password', function (request, response){
 // 	var user = request.session.user
@@ -400,24 +408,28 @@ app.post ('/user/:id/password', function (request, response){
 // 	}
 // })
 
-//I have to take the force out (if it's there) when im done with the app
+//Execute server
 sequelize.sync().then(function () {
-	var server = app.listen(3000, function () {
+	var server = app.listen(3001, function () {
 		console.log(server.address().port);
 	});
 });
 
-//TODO:
+//Functionality to add:
+//User can edit post or comment?
+//User can delete it's account
+//what happens to posts and comments if user deletes account?
 //i still have to do something with capitilizing the names when register or log in
-//(how) do I edit my posts and comments?
+
+//TODO:
 //Get the createdAt date in a different format
 //I have to trim all the input fields so that solely spaces will not be written to the database
-//Make sure to "return" after an If validation so that the server doesn't try to execute the rest of the code
+//Make sure to "return" after an If validation so that the server doesn't try to execute the rest of the code. check the status of this
  
 //Notes to self:
 //only worry about performance when you have over a million or 10 million of something
 //postgres database diagram.. to find a app that will give me a graphical view of my database
 //there are two general rules about doing something if something === undefined first or do the thing if something !== undefined.. there's no better one..
 //I probably cant use a put request to change the password because forms probably only allow post and get request... so I could use Ajax for that.. but that might be too fancy?
-// allowNull: false //Jon said: only probably have this protection also on the database (not only in the app) if theres multiple components(?) using your database etc... having it for a blog app is overkill
+//allowNull: false //Jon said: only probably have this protection also on the database (not only in the app) if theres multiple components(?) using your database etc... having it for a blog app is overkill
 

@@ -1,6 +1,7 @@
 doctype html
 html
-	head
+	head 
+		link(rel="stylesheet" type="text/css" href="../css/mycss.css") 
 	body
 		form(name="button", action="/logout", method="get")
 			br
@@ -13,7 +14,7 @@ html
 			h3(style={color:'red'}) There are no posts yet, create your first one!				
 		else
 			each post in data
-				div(style={border: '1px solid red', color: 'black', background: 'cyan', width: '500px', margin: '20px'})
+				div(id='post')
 					h3 Title: #{post.title}	
 					p Post:				
 					a(href='/posts/#{post.id}') #{post.body}
