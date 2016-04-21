@@ -37,7 +37,7 @@ html
 			br
 			hr
 			h3 Comments
-			if allcomments.length === 0
+			if allcomments.length == 0
 				h3(style={color:'red'}) There are no comments yet, be the first!				
 			each comment in allcomments		
 				if comment.username !== user.name

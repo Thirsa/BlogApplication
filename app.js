@@ -98,7 +98,6 @@ app.get('/', function (request, response){
 	}
 });
 
-
 app.post('/login', function (request, response){
 	Users.findOne({
 		where: {
@@ -422,9 +421,34 @@ sequelize.sync().then(function () {
 //i still have to do something with capitilizing the names when register or log in
 
 //TODO:
+//Close paths with /. Example : 'Home/Desktop' --> 'Home/Desktop/' (because of onspoken protocol and some time it might matter)
 //Get the createdAt date in a different format
-//I have to trim all the input fields so that solely spaces will not be written to the database
+//Trim input fields so that solely spaces will not be a value
 //Make sure to "return" after an If validation so that the server doesn't try to execute the rest of the code. check the status of this
+//Implement this wat of verifiying if user is looged in (create module):
+	
+	// app.use();
+
+
+	// app.use('/logon/', authenticate.check, authenticate.logon);
+	// app.use('/posts/', authenticate.check, post.list);
+
+
+	// var authenticate =
+	//  {
+	// 	check: function (request, response, next)
+	// 	 {
+	// 	  if (request.session.user == null)
+	// 	  {
+	// 			var message = "Please login again :)"
+	// 			response.render ('index', {message:message})
+	// 	  }
+
+	// 	  return next();
+	// 	 },
+
+	// 	logon: function () {},
+	//  };
  
 //Notes to self:
 //only worry about performance when you have over a million or 10 million of something
@@ -432,4 +456,3 @@ sequelize.sync().then(function () {
 //there are two general rules about doing something if something === undefined first or do the thing if something !== undefined.. there's no better one..
 //I probably cant use a put request to change the password because forms probably only allow post and get request... so I could use Ajax for that.. but that might be too fancy?
 //allowNull: false //Jon said: only probably have this protection also on the database (not only in the app) if theres multiple components(?) using your database etc... having it for a blog app is overkill
-
